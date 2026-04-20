@@ -1,0 +1,9 @@
+# python 개발 환경을 위한 기본 설정
+venv/
+__pycache__/
+*.pyc
+
+# 운영 체제 별로 생길 수 있는 파일
+.DS_Store
+Thumbs.db
+desktop.ini
