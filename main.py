@@ -86,3 +86,21 @@ def deletePost(num: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"status": "success", "message": f"{num}번 포스트가 삭제되었습니다."}
+
+@app.get("/post/edit/{num}")
+def edit(num: int, request: Request, db: Session = Depends(get_db)):
+    # 수정 글 정보를 읽어올 query
+    query = text("""
+        SELECT num, writer, title, content, created_at
+        FROM post
+        WHERE num=:num
+    """)
+    # PK 를 이용해 select 하는 것이기 때문에 row는 1개 따라서 .fetchone() 함수 호출
+    row = db.execute(query, {"num":num}).fetchone()
+    return templates.TemplateResponse(
+        request=request,
+        name="post/edit.html",
+        context={
+            "post":row
+        }
+    )
