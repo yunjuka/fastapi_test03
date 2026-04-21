@@ -17,6 +17,7 @@
                     <th>제목</th>
                     <th>내용</th>
                     <th>작성일</th>
+                    <th>수정</th>
                     <th>삭제</th>
                 </tr>
             </thead>
@@ -28,6 +29,9 @@
                     <td>{{ post.title }}</td>
                     <td>{{ post.content }}</td>
                     <td>{{ post.created_at }}</td>
+                    <td>
+                        <a href="/post/edit/{{ post.num }}">수정</a>
+                    </td>
                     <td>
                         <button onclick="deletePost({{ post.num }})">삭제</button>
                     </td>
