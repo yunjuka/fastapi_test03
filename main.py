@@ -88,7 +88,7 @@ def deletePost(num: int, db: Session = Depends(get_db)):
     return {"status": "success", "message": f"{num}번 포스트가 삭제되었습니다."}
 
 @app.get("/post/edit/{num}")
-def edit(num: int, request: Request, db: Session = Depends(get_db)):
+def editForm(num: int, request: Request, db: Session = Depends(get_db)):
     # 수정 글 정보를 읽어올 query
     query = text("""
         SELECT num, writer, title, content, created_at
@@ -102,5 +102,24 @@ def edit(num: int, request: Request, db: Session = Depends(get_db)):
         name="post/edit.html",
         context={
             "post":row
+        }
+    )
+
+# 글 수정 반영
+@app.post("/post/edit/{num}")
+def edit(request: Request, num: int, title: str = Form(...), content: str = Form(...), db: Session = Depends(get_db)):
+    query = text("""
+        UPDATE post
+        SET title=:title, content=:content
+        WHERE num=:num
+    """)
+    db.execute(query, {"num":num, "title":title, "content": content})
+    db.commit()
+    return templates.TemplateResponse(
+        request=request,
+        name="post/alert.html",
+        context={
+            "msg":"글 정보를 수정 했습니다",
+            "url":"/post"
         }
     )
