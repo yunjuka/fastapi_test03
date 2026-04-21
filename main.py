@@ -54,19 +54,26 @@ def postNewForm(request: Request):
     return templates.TemplateResponse(request=request, name="post/new-form.html")
 
 @app.post("/post/new")
-def postNew(writer: str = Form(...), title: str = Form(...), content: str = Form(...),
+def postNew(request: Request, writer: str = Form(...), title: str = Form(...), content: str = Form(...),
             db: Session = Depends(get_db)):
-    # DB 에 저장할 sql 문
-    qurey = text("""
+    # DB 에 저장할 sql 문  준비
+    query = text("""
         INSERT INTO post
         (writer, title, content)
         VALUES(:writer, :title, :content)
     """)
-    db.execute(qurey, {"writer":writer, "title":title, "content":content})
+    # query 문을 실행하면서 같이 전달한 dict 의 키값과  :writer , :title, :content 동일한 위치에 값이 바인딩되어서 실행된다.
+    db.execute(query, {"writer":writer, "title":title, "content":content})
     db.commit()
 
-    # 특린 경로로 요청을 다시하도록 리다이렉트 응답
-    return RedirectResponse("/post", status_code=302)
+    # 특정 경로로 요청을 다시 하도록 리다일렉트 응답을 준다. 
+    return templates.TemplateResponse(
+        request=request, 
+        name="post/alert.html",
+        context={
+            "msg":"글 정보를 추가 했습니다!"
+        }
+    )
 
 @app.delete("/post/delete/{num}")
 def deletePost(num: int, db: Session = Depends(get_db)):
@@ -79,4 +86,3 @@ def deletePost(num: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"status": "success", "message": f"{num}번 포스트가 삭제되었습니다."}
- 
